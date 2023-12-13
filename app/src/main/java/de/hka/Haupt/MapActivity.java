@@ -34,10 +34,12 @@ import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 import Netzwerk.EfaApiClient;
 import Objekte.EfaCoordResponse;
+import Objekte.LocationProperties;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -231,50 +233,37 @@ public class MapActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(retrofit2.Call<EfaCoordResponse> call, Response<EfaCoordResponse> response) {
+                Log.d("MapActivity", String.format("Response %d Locations", response.body().getLocations().size()));
+                List<Objekte.Location> locations = response.body().getLocations();
+
+                for (int i = 0; i < locations.size(); i++) {
+                    Objekte.Location location = locations.get(i);
+                    String haltestellenName = location.getName();
+
+                    System.out.println(haltestellenName);
+
+
+
+
+
+
+
 
                
 
-                Log.d("MapActivity", String.format("Response %d Locations", response.body().getLocations().size()));
-               wert= (response.body().getLocations().size());
-                string3 = ("Score: "+ wert);
-                 Liste1=((response.body().getLocations()));
-
-
-                for (int i = 0; i < Liste1.size(); i++) {
-                    System.out.println(Liste1.get(i));
-
-
-                }
-
-                for (int i = 0; i < response.body().getLocations().size(); i++) {
-                    System.out.println("ausgabe "+response.body().getLocations().get(i));
-
-
-
-
-                }
 
 
 
                 System.out.println(Liste1);
-
-
-
-
-
-
-
-
-
             }
+
+
+
+
+        }
 
             @Override
             public void onFailure(Call<EfaCoordResponse> call, Throwable t) {
-                Log.d("MapActivity", "Failure" );
 
-            }
 
-        });
-
-    }
-}
+            };});};};
