@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Übung2_1</string>
+    <string name="hello_world">Hello, WÖÖrld!1!</string>
+    <string name="button_weiter">Weiter</string>
+    <string name="button_klick">Klick!</string>
+    <string name="account_name">Max Mustermann</string>
+    <string name="yalla" />
+    <string name="score">Platzhalter</string>
+</resources>
