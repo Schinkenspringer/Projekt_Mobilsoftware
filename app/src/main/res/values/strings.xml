@@ -5,5 +5,6 @@
     <string name="button_klick">Klick!</string>
     <string name="account_name">Max Mustermann</string>
     <string name="yalla" />
-    <string name="score">Platzhalter</string>
+    <string name="score"></string>
+    <string name="erklarung_score"></string>
 </resources>

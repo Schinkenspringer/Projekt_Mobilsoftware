@@ -10,12 +10,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.CallLog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nabinbhandari.android.permissions.PermissionHandler;
@@ -30,16 +29,14 @@ import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 
 import Netzwerk.EfaApiClient;
 import Objekte.EfaCoordResponse;
-import Objekte.LocationProperties;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,13 +50,18 @@ public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;
 
+    int Busscore;
+    int Bahnscore;
+    int Scorewert;
+
+
+    List<String> mittel;
+
     String string3;
+    String string4;
+    List<String> Liste3 = new ArrayList<>();
 
-    String string5;
 
-   List Liste1;
-
-    int wert;
 
 
     @Override
@@ -69,22 +71,44 @@ public class MapActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
         Button btn_score = this.findViewById(R.id.Score);
 
         TextView ausgabe= this.findViewById(R.id.ausgabe_score);
+
+        TextView score_erklarung= this.findViewById(R.id.erklarung_score);
+
+        ImageView ausklappen = this.findViewById(R.id.klappen);
+
+        string3 = ("Mobility-Score: "+Scorewert);
+
+
+        ausklappen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if
+                (score_erklarung.getVisibility()==View.INVISIBLE){
+                    score_erklarung.setVisibility(View.VISIBLE);
+                    btn_score.setVisibility(View.INVISIBLE);
+                    ausklappen.setImageResource(R.drawable.pfeil_rauf);
+                    score_erklarung.setText(string4);
+
+                } else {
+                    score_erklarung.setVisibility(View.INVISIBLE);
+                    btn_score.setVisibility(View.VISIBLE);
+                    ausklappen.setImageResource(R.drawable.pfeil_runter);
+                }
+            }
+        });
 
         btn_score.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+
+
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -135,17 +159,7 @@ public class MapActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
     }
-
-
-
-
-
-
-
-
 
     @Override
     protected void onResume() {
@@ -156,7 +170,6 @@ public class MapActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION
 
         };
-
 
         Permissions.check(this, permissions, null, null, new PermissionHandler() {
             @Override
@@ -183,6 +196,8 @@ public class MapActivity extends AppCompatActivity {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
+
+
                 double latitude = location.getLatitude();  // get aktuelle breite
                 double longitude = location.getLongitude();   // get aktuelle Länge
 
@@ -233,28 +248,78 @@ public class MapActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(retrofit2.Call<EfaCoordResponse> call, Response<EfaCoordResponse> response) {
+
                 Log.d("MapActivity", String.format("Response %d Locations", response.body().getLocations().size()));
-                List<Objekte.Location> locations = response.body().getLocations();
+                List<Objekte.Location> haltestellen = response.body().getLocations();
 
-                for (int i = 0; i < locations.size(); i++) {
-                    Objekte.Location location = locations.get(i);
-                    String haltestellenName = location.getName();
-
-                    System.out.println(haltestellenName);
+                for (int i = 0; i < haltestellen.size(); i++) {
+                    Objekte.Location location = haltestellen.get(i);
 
 
-
-
-
-
-
-
-               
+                    String HId = location.getId();
+                    String HName = location.getName();
+                    int []Vmittel = location.getProductClasses();
+                    double Entfernung= location.getProperties().getDistance();
 
 
 
 
-                System.out.println(Liste1);
+
+                    for (int k=0; k < Vmittel.length; k++) {
+
+                        if (Vmittel[k]== 5){ Busscore = Busscore+1;} //Busscore wird um 1 erhöht da Stadtbus vorhanden
+                        if (Vmittel[k]== 6){ Busscore = Busscore+1;} //Busscore wird um 1 erhöht da Regionalbus vorhanden
+                        if (Vmittel[k]== 7){ Busscore = Busscore+1;} //Busscore wird um 1 erhöht da Schnellbus vorhanden
+
+                        if (Vmittel[k]== 0){ Bahnscore = Bahnscore+2;} //Bahnscore wird um 2 erhöht da Zug vorhanden
+                        if (Vmittel[k]== 1){ Bahnscore = Bahnscore+2;} //Bahnscore wird um 2 erhöht da S-Bahn vorhanden
+                        if (Vmittel[k]== 2){ Bahnscore = Bahnscore+3;} //Bahnscore wird um 3 erhöht da U-Bahn vorhanden
+                        if (Vmittel[k]== 3){ Bahnscore = Bahnscore+2;} //Bahnscore wird um 2 erhöht da Stadtbahn vorhanden
+                        if (Vmittel[k]== 4){ Bahnscore = Bahnscore+2;} //Bahnscore wird um 2 erhöht da Straßenbahn vorhanden
+                        if (Vmittel[k]== 13){ Bahnscore = Bahnscore+2;} //Bahnscore wird um 2 erhöht da Zug(Nahverkehr) vorhanden
+                        if (Vmittel[k]== 14){ Bahnscore = Bahnscore+4;} //Bahnscore wird um 2 erhöht da Zug(Fernverkehr) vorhanden
+
+
+
+
+
+
+                        String[] Verkehrsmittel = {
+
+                                "Zug", "S-Bahn", "U-Bahn", "Stadtbahn", "Straßen-/Trambahn",
+                                "Stadtbus", "Regionalbus", "Schnellbus", "Seil-/Zahnradbahn", "Schiff",
+                                "AST", "Sonstige", "Flugzeug", "Zug(Nahverkehr)", "Zug(Fernverkehr)",
+                                "Zug Fernv m Zuschlag", "Zug Fernv m spez Fpr", "SEV", "Zug Shuttle", "Bürgerbus",
+
+                        };
+
+
+                        Liste3.add(Verkehrsmittel[Vmittel[k]]);
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+                    System.out.println("ID: "+HId+" Name: "+HName+" Vmittel: "+ Arrays.toString(Vmittel)+" "+ Liste3+" Entfernung: "+Entfernung);
+                    Liste3.clear();
+                    string4 = ("Der Mobility-Score setzt sich folgendermaßen zusammen: "+'\n'+ "Busscore: "+ Busscore +" + "+"Bahnscore: "+ Bahnscore+ " ");
+                    int add1= Bahnscore; int add2= Busscore;
+                     Scorewert= add1+add2;
+                    string3 = ("Mobility-Score: "+Scorewert);
+
+
+
+
+
             }
 
 

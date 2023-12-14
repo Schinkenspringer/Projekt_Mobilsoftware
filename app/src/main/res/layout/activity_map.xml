@@ -3,7 +3,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:expandableTextView="http://schemas.android.com/apk/res-auto">
+
+
+    <ImageView
+        android:id="@+id/klappen"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+
+        android:layout_alignBottom="@id/ausgabe_score"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:duplicateParentState="true"
+        android:src="@drawable/pfeil_runter"
+        tools:layout_alignParentRight="true" />
 
 
     <Button
@@ -27,10 +42,26 @@
         android:layout_height="50dp"
         android:layout_alignBottom="@id/mapView"
         android:layout_alignParentRight="true"
+        android:layout_marginEnd="60dp"
         android:layout_marginBottom="-100dp"
         android:ems="10"
         android:inputType="text"
-        android:text="@string/score" />
+        android:text="@string/score"
+        android:textAlignment="center"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/erklarung_score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/Score"
+        android:layout_alignBottom="@id/ausgabe_score"
+
+        android:layout_marginBottom="50dp"
+        android:background="#656565"
+        android:text="@string/erklarung_score"
+        android:textSize="12sp"
+        android:visibility="invisible" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -28,6 +28,8 @@ public class Location {
         return name;
     }
 
+    public int[] getProductClasses() {return productClasses;}
+
     public double[] getCoordinates(){
         return coordinates;
     }
