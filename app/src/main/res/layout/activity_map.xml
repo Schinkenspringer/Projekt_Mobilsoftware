@@ -58,7 +58,6 @@
         android:layout_alignBottom="@id/ausgabe_score"
 
         android:layout_marginBottom="50dp"
-        android:background="#656565"
         android:text="@string/erklarung_score"
         android:textSize="12sp"
         android:visibility="invisible" />
