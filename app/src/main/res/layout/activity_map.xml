@@ -21,40 +21,33 @@
         tools:layout_alignParentRight="true" />
 
 
-    <Button
-        android:id="@+id/Score"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/ausgabe_score"
-        android:layout_marginBottom="50dp"
-        android:text="Score" />
-
     <org.osmdroid.views.MapView
 
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="100dp" />
+        android:layout_marginTop="75dp" />
 
     <TextView
         android:id="@+id/ausgabe_score"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@id/mapView"
+        android:layout_height="75dp"
+        android:layout_alignTop="@id/mapView"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="-75dp"
         android:layout_marginEnd="60dp"
-        android:layout_marginBottom="-100dp"
         android:ems="10"
         android:inputType="text"
         android:text="@string/score"
         android:textAlignment="center"
         android:textSize="30sp" />
 
+
     <TextView
         android:id="@+id/erklarung_score"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/Score"
+
         android:layout_alignBottom="@id/ausgabe_score"
 
         android:layout_marginBottom="50dp"
@@ -64,9 +57,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:backgroundTint="#575757">
 
 
     </LinearLayout>
+
+
 
 </RelativeLayout>

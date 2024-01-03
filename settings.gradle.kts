@@ -14,6 +14,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Übung2_1"
+rootProject.name = "Mobilsoftware_Projekt"
 include(":app")
  

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,11 +29,18 @@ import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 import Netzwerk.EfaApiClient;
@@ -54,11 +62,15 @@ public class MapActivity extends AppCompatActivity {
     int Bahnscore;
     int Scorewert;
 
+    int wert=0;
+
 
     List<String> mittel;
 
     String string3;
     String string4;
+
+    String string5;
     List<String> Liste3 = new ArrayList<>();
 
 
@@ -71,7 +83,7 @@ public class MapActivity extends AppCompatActivity {
 
 
 
-        Button btn_score = this.findViewById(R.id.Score);
+
 
         TextView ausgabe= this.findViewById(R.id.ausgabe_score);
 
@@ -82,6 +94,44 @@ public class MapActivity extends AppCompatActivity {
         string3 = ("Mobility-Score: "+Scorewert);
 
 
+
+
+        Thread Score_updater = new Thread(){
+            @Override
+            public void run(){
+
+                while(true){
+                    try {
+                        Thread.sleep(700);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                string3 = ("Mobility-Score: "+Scorewert);
+                                ausgabe.setText(string3);
+
+
+
+                            }
+                        });
+
+
+
+
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+        };
+        Score_updater.start();
+
+
+
+
+
+
         ausklappen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,32 +139,26 @@ public class MapActivity extends AppCompatActivity {
                 if
                 (score_erklarung.getVisibility()==View.INVISIBLE){
                     score_erklarung.setVisibility(View.VISIBLE);
-                    btn_score.setVisibility(View.INVISIBLE);
+
                     ausklappen.setImageResource(R.drawable.pfeil_rauf);
                     score_erklarung.setText(string4);
 
                 } else {
                     score_erklarung.setVisibility(View.INVISIBLE);
-                    btn_score.setVisibility(View.VISIBLE);
+
                     ausklappen.setImageResource(R.drawable.pfeil_runter);
                 }
             }
         });
 
-        btn_score.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+           {
 
 
 
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                ausgabe.setText(string3);
-            }
-        });
+
+           }
+        ;
 
         XYTileSource mapServer = new XYTileSource(
                 "MapName",
@@ -193,9 +237,25 @@ public class MapActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void initlocationListener (){
 
+
+
+
         LocationListener locationListener = new LocationListener() {
+
+
+            Marker standort = new Marker(mapView); // Erstellung des Markers für die aktuelle Position
+
+
+
+
+
+
+
             @Override
             public void onLocationChanged(@NonNull Location location) {
+
+
+
 
 
                 double latitude = location.getLatitude();  // get aktuelle breite
@@ -205,6 +265,37 @@ public class MapActivity extends AppCompatActivity {
 
                 IMapController mapController = mapView.getController();
                 mapController.setCenter(startPoint);
+
+
+                standort.setPosition(startPoint); // Marker "Standort" wird auf Geopoint der aktuellen Position gesetzt
+                standort.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM); // Marker wir so dargestellt dass seine Spitze auf den Standort zeigt
+                standort.setTitle("Aktueller Standort"); //Gibt Marker einen Titel
+
+
+
+
+
+                standort.setIcon(getResources().getDrawable(R.drawable.standort_icon)); // Icon des Markers wird geändert
+
+
+
+
+
+
+
+
+                mapView.getOverlays().add(standort); // Marker wird als Overlay zur mapView hinzugefügt und damit dargestellt
+
+
+
+
+
+
+
+
+
+                Busscore =0;
+                Bahnscore = 0;
 
 
 
@@ -249,17 +340,50 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onResponse(retrofit2.Call<EfaCoordResponse> call, Response<EfaCoordResponse> response) {
 
+
+
+
+
                 Log.d("MapActivity", String.format("Response %d Locations", response.body().getLocations().size()));
                 List<Objekte.Location> haltestellen = response.body().getLocations();
+                Busscore =0;
+                Bahnscore = 0;
+
+
+
+
+
 
                 for (int i = 0; i < haltestellen.size(); i++) {
                     Objekte.Location location = haltestellen.get(i);
 
+                    Marker hmarker = new Marker(mapView); // Erstellung des Markers für die Haltestelle
 
+
+
+
+
+
+
+
+                    double[] Hlocation= location.getCoordinates();
                     String HId = location.getId();
                     String HName = location.getName();
                     int []Vmittel = location.getProductClasses();
                     double Entfernung= location.getProperties().getDistance();
+
+
+                    GeoPoint Hpoint = new GeoPoint(Hlocation[0],Hlocation[1]);
+
+
+                    hmarker.setPosition(Hpoint); // Marker "hmarker" wird auf Geopoint der Haltestelle
+                    hmarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM); // Marker wir so dargestellt dass seine Spitze auf den Standort zeigt
+
+                    hmarker.setIcon(getResources().getDrawable(R.drawable.h_icon)); // Icon des Markers wird geändert
+
+
+                    mapView.getOverlays().add(hmarker); // Marker wird als Overlay zur mapView hinzugefügt und damit dargestellt
+
 
 
 
@@ -309,12 +433,14 @@ public class MapActivity extends AppCompatActivity {
 
 
 
-                    System.out.println("ID: "+HId+" Name: "+HName+" Vmittel: "+ Arrays.toString(Vmittel)+" "+ Liste3+" Entfernung: "+Entfernung);
+                    System.out.println("ID: "+HId+" Name: "+HName+" Vmittel: "+ Arrays.toString(Vmittel)+" "+ Liste3+" Entfernung: "+Entfernung +" Koordinaten: "+ Hlocation[0]+ ","+ Hlocation[1]);
                     Liste3.clear();
                     string4 = ("Der Mobility-Score setzt sich folgendermaßen zusammen: "+'\n'+ "Busscore: "+ Busscore +" + "+"Bahnscore: "+ Bahnscore+ " ");
                     int add1= Bahnscore; int add2= Busscore;
                      Scorewert= add1+add2;
                     string3 = ("Mobility-Score: "+Scorewert);
+
+
 
 
 
